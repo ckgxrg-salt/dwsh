@@ -968,6 +968,7 @@ dependencies = [
 name = "dwsh-logout"
 version = "0.1.0"
 dependencies = [
+ "dwsh-utils",
  "iced",
  "iced_layershell",
 ]
@@ -986,6 +987,7 @@ dependencies = [
 name = "dwsh-utils"
 version = "0.1.0"
 dependencies = [
+ "iced",
  "serde",
  "toml",
 ]
