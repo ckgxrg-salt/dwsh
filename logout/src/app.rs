@@ -1,14 +1,11 @@
-use iced::widget::{button, column, row, text};
-use iced::{Alignment, Element, Event, Length, Subscription, Task, Theme};
-use iced_layershell::to_layer_message;
+use gtk::prelude::*;
+use gtk4_layer_shell::{Edge, Layer, LayerShell};
+use relm4::prelude::*;
 use std::fmt::Display;
 
-use dwsh_utils::base16::ColourScheme;
-
-pub struct LogoutWindow {
+pub struct LogoutApp {
     text: String,
     focused: LogoutAction,
-    theme: ColourScheme,
 }
 
 #[derive(PartialEq, Clone, Debug)]
@@ -34,52 +31,84 @@ impl Display for LogoutAction {
     }
 }
 
-#[to_layer_message]
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub enum Message {
     SelectAction(LogoutAction),
-    IcedEvent(Event),
+    // IcedEvent(Event),
 }
 
-impl Default for LogoutWindow {
-    fn default() -> Self {
-        Self::new()
-    }
-}
+#[relm4::component(pub)]
+impl SimpleComponent for LogoutApp {
+    type Init = ();
+    type Input = Message;
+    type Output = ();
 
-impl LogoutWindow {
-    #[must_use]
-    pub fn new() -> Self {
-        let theme = match ColourScheme::from_path(&dwsh_utils::base16::get_config()) {
-            Ok(colors) => colors,
-            Err(err) => {
-                eprintln!("failed to load valid colourscheme: {err}");
-                ColourScheme::default()
+    view! {
+        gtk::Window {
+            init_layer_shell: (),
+            set_layer: Layer::Overlay,
+            set_anchor: (Edge::Left, true),
+            set_anchor: (Edge::Right, true),
+            set_anchor: (Edge::Top, true),
+            set_anchor: (Edge::Bottom, true),
+            set_title: Some("dwsh-logout"),
+
+            gtk::Box {
+                set_orientation: gtk::Orientation::Vertical,
+                set_align: gtk::Align::Center,
+
+                gtk::Box {
+                    set_align: gtk::Align::Center,
+
+                    gtk::Button {
+                        set_label: "Poweroff",
+                        connect_clicked => Message::SelectAction(LogoutAction::Poweroff),
+                    },
+                    gtk::Button {
+                        set_label: "Reboot",
+                        connect_clicked => Message::SelectAction(LogoutAction::Reboot),
+                    }
+                },
+
+                gtk::Label {
+                    #[watch]
+                    set_label: &model.text,
+                },
+
+                gtk::Box {
+                    set_align: gtk::Align::Center,
+
+                    gtk::Button {
+                        set_label: "Suspend",
+                        connect_clicked => Message::SelectAction(LogoutAction::Suspend),
+                    },
+                    gtk::Button {
+                        set_label: "Logout",
+                        connect_clicked => Message::SelectAction(LogoutAction::Logout),
+                    },
+                    gtk::Button {
+                        set_label: "Lock",
+                        connect_clicked => Message::SelectAction(LogoutAction::Lock),
+                    }
+                }
             }
-        };
-
-        Self {
-            text: LogoutAction::None.to_string(),
-            focused: LogoutAction::None,
-            theme,
         }
     }
 
-    #[must_use]
-    pub fn namespace(&self) -> String {
-        String::from("dwsh-logout")
+    fn init(
+        init: Self::Init,
+        root: Self::Root,
+        sender: ComponentSender<Self>,
+    ) -> ComponentParts<Self> {
+        let model = LogoutApp {
+            text: LogoutAction::None.to_string(),
+            focused: LogoutAction::None,
+        };
+        let widgets = view_output!();
+        ComponentParts { model, widgets }
     }
 
-    #[must_use]
-    pub fn theme(&self) -> Theme {
-        self.theme.to_iced_theme()
-    }
-
-    pub fn subscription(&self) -> Subscription<Message> {
-        iced::event::listen().map(Message::IcedEvent)
-    }
-
-    pub fn update(&mut self, message: Message) -> Task<Message> {
+    fn update(&mut self, message: Self::Input, _sender: ComponentSender<Self>) {
         match message {
             Message::SelectAction(action) => {
                 if action != LogoutAction::None && self.focused == action {
@@ -88,33 +117,8 @@ impl LogoutWindow {
                     self.text = action.to_string();
                     self.focused = action;
                 }
-                Task::none()
             }
-            Message::IcedEvent(event) => {
-                println!("{event:?}");
-                Task::none()
-            }
-            _ => unreachable!(),
         }
-    }
-
-    #[must_use]
-    pub fn view(&self) -> Element<'_, Message> {
-        column![
-            row![
-                button("poweroff").on_press(Message::SelectAction(LogoutAction::Poweroff)),
-                button("reboot").on_press(Message::SelectAction(LogoutAction::Reboot)),
-            ],
-            text(&self.text),
-            row![
-                button("suspend").on_press(Message::SelectAction(LogoutAction::Suspend)),
-                button("logout").on_press(Message::SelectAction(LogoutAction::Logout)),
-                button("lock").on_press(Message::SelectAction(LogoutAction::Lock)),
-            ]
-        ]
-        .align_x(Alignment::Center)
-        .width(Length::Fill)
-        .into()
     }
 }
 

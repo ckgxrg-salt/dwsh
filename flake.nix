@@ -36,6 +36,11 @@
           xorg.libXrandr
           wayland
           libxkbcommon
+
+          gdk-pixbuf
+          pango
+          gtk4
+          gtk4-layer-shell
         ];
 
         LD_LIBRARY_PATH = builtins.foldl' (a: b: "${a}:${b}/lib") "${pkgs.vulkan-loader}/lib" buildInputs;

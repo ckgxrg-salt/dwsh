@@ -7,6 +7,6 @@ edition = "2024"
 pedantic = "warn"
 
 [dependencies]
-iced = { version = "0.13.1", features = ["tokio"] }
-iced_layershell = "0.13.7"
-dwsh-utils = { path = "../utils" }
+relm4 = "0.10.0"
+gtk4-layer-shell = "0.7.1"
+gtk4 = "0.10.2"

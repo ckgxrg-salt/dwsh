@@ -91,6 +91,7 @@ where
 }
 
 /// Gets the default path to the colourscheme configuration.
+/// The default path is: `%XDG_CONFIG_HOME%/dwsh/theme.toml` or `~/.config/dwsh/theme.toml`.
 #[must_use]
 pub fn get_config() -> PathBuf {
     if let Ok(path) = std::env::var("XDG_CONFIG_HOME") {
