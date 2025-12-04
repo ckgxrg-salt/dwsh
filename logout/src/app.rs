@@ -8,7 +8,7 @@ pub struct LogoutApp {
     focused: LogoutAction,
 }
 
-#[derive(PartialEq, Clone, Debug)]
+#[derive(PartialEq, Debug)]
 pub enum LogoutAction {
     None,
     Poweroff,
@@ -34,7 +34,6 @@ impl Display for LogoutAction {
 #[derive(Debug)]
 pub enum Message {
     SelectAction(LogoutAction),
-    // IcedEvent(Event),
 }
 
 #[relm4::component(pub)]
@@ -53,41 +52,71 @@ impl SimpleComponent for LogoutApp {
             set_anchor: (Edge::Bottom, true),
             set_title: Some("dwsh-logout"),
 
+            add_controller = gtk::GestureClick {
+                connect_released[sender] => move |_, _, _, _| sender.input(Message::SelectAction(LogoutAction::None)),
+            },
+
             gtk::Box {
                 set_orientation: gtk::Orientation::Vertical,
                 set_align: gtk::Align::Center,
+                set_spacing: 50,
 
                 gtk::Box {
                     set_align: gtk::Align::Center,
+                    set_height_request: 300,
+                    set_spacing: 50,
 
                     gtk::Button {
-                        set_label: "Poweroff",
+                        set_tooltip_text: Some("Power Off"),
+                        set_icon_name: "system-shutdown",
+                        set_size_request: (300, 250),
+                        #[watch]
+                        set_margin_top: if model.focused == LogoutAction::Poweroff {0} else {50},
                         connect_clicked => Message::SelectAction(LogoutAction::Poweroff),
                     },
                     gtk::Button {
                         set_label: "Reboot",
+                        set_size_request: (300, 250),
+                        #[watch]
+                        set_margin_top: if model.focused == LogoutAction::Reboot {0} else {50},
                         connect_clicked => Message::SelectAction(LogoutAction::Reboot),
                     }
                 },
 
-                gtk::Label {
-                    #[watch]
-                    set_label: &model.text,
+                gtk::Box {
+                    set_orientation: gtk::Orientation::Vertical,
+
+                    gtk::Label {
+                        #[watch]
+                        set_label: &model.text,
+                    },
+                    gtk::Separator,
                 },
 
                 gtk::Box {
                     set_align: gtk::Align::Center,
+                    set_height_request: 300,
+                    set_spacing: 30,
 
                     gtk::Button {
                         set_label: "Suspend",
+                        set_size_request: (300, 250),
+                        #[watch]
+                        set_margin_top: if model.focused == LogoutAction::Suspend {0} else {50},
                         connect_clicked => Message::SelectAction(LogoutAction::Suspend),
                     },
                     gtk::Button {
                         set_label: "Logout",
+                        set_size_request: (300, 250),
+                        #[watch]
+                        set_margin_top: if model.focused == LogoutAction::Logout {0} else {50},
                         connect_clicked => Message::SelectAction(LogoutAction::Logout),
                     },
                     gtk::Button {
                         set_label: "Lock",
+                        set_size_request: (300, 250),
+                        #[watch]
+                        set_margin_top: if model.focused == LogoutAction::Lock {0} else {50},
                         connect_clicked => Message::SelectAction(LogoutAction::Lock),
                     }
                 }
@@ -96,7 +125,7 @@ impl SimpleComponent for LogoutApp {
     }
 
     fn init(
-        init: Self::Init,
+        _init: Self::Init,
         root: Self::Root,
         sender: ComponentSender<Self>,
     ) -> ComponentParts<Self> {
@@ -111,7 +140,7 @@ impl SimpleComponent for LogoutApp {
     fn update(&mut self, message: Self::Input, _sender: ComponentSender<Self>) {
         match message {
             Message::SelectAction(action) => {
-                if action != LogoutAction::None && self.focused == action {
+                if self.focused == action {
                     execute(&action);
                 } else {
                     self.text = action.to_string();
@@ -125,5 +154,5 @@ impl SimpleComponent for LogoutApp {
 // Executes the given logout action.
 fn execute(action: &LogoutAction) {
     println!("{action}");
-    panic!("Exited");
+    relm4::main_application().quit();
 }
