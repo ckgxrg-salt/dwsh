@@ -76,6 +76,7 @@ impl SimpleComponent for LogoutApp {
                     },
                     gtk::Button {
                         set_label: "Reboot",
+                        set_icon_name: "system-reboot",
                         set_size_request: (300, 250),
                         #[watch]
                         set_margin_top: if model.focused == LogoutAction::Reboot {0} else {50},
@@ -85,6 +86,7 @@ impl SimpleComponent for LogoutApp {
 
                 gtk::Box {
                     set_orientation: gtk::Orientation::Vertical,
+                    set_spacing: 10,
 
                     gtk::Label {
                         #[watch]
@@ -100,6 +102,7 @@ impl SimpleComponent for LogoutApp {
 
                     gtk::Button {
                         set_label: "Suspend",
+                        set_icon_name: "system-suspend",
                         set_size_request: (300, 250),
                         #[watch]
                         set_margin_top: if model.focused == LogoutAction::Suspend {0} else {50},
@@ -107,6 +110,7 @@ impl SimpleComponent for LogoutApp {
                     },
                     gtk::Button {
                         set_label: "Logout",
+                        set_icon_name: "system-log-out",
                         set_size_request: (300, 250),
                         #[watch]
                         set_margin_top: if model.focused == LogoutAction::Logout {0} else {50},
@@ -114,6 +118,7 @@ impl SimpleComponent for LogoutApp {
                     },
                     gtk::Button {
                         set_label: "Lock",
+                        set_icon_name: "system-lock-screen",
                         set_size_request: (300, 250),
                         #[watch]
                         set_margin_top: if model.focused == LogoutAction::Lock {0} else {50},

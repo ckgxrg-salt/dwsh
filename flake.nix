@@ -12,7 +12,7 @@
       };
     in
     {
-      devShells.${system}.default = pkgs.mkShell rec {
+      devShells.${system}.default = pkgs.mkShell {
         name = "daywatch-shell";
 
         nativeBuildInputs = with pkgs; [
@@ -41,9 +41,10 @@
           pango
           gtk4
           gtk4-layer-shell
+          librsvg
         ];
 
-        LD_LIBRARY_PATH = builtins.foldl' (a: b: "${a}:${b}/lib") "${pkgs.vulkan-loader}/lib" buildInputs;
+        # LD_LIBRARY_PATH = builtins.foldl' (a: b: "${a}:${b}/lib") "${pkgs.vulkan-loader}/lib" buildInputs;
       };
     };
 }
