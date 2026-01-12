@@ -5,7 +5,7 @@ use relm4::prelude::*;
 use std::fmt::Display;
 use std::process::Command;
 
-pub struct LogoutApp {
+pub struct DwshLogout {
     text: String,
     focused: LogoutAction,
 }
@@ -39,7 +39,7 @@ pub enum Message {
 }
 
 #[relm4::component(pub)]
-impl SimpleComponent for LogoutApp {
+impl SimpleComponent for DwshLogout {
     type Init = ();
     type Input = Message;
     type Output = ();
@@ -142,7 +142,7 @@ impl SimpleComponent for LogoutApp {
         root: Self::Root,
         sender: ComponentSender<Self>,
     ) -> ComponentParts<Self> {
-        let model = LogoutApp {
+        let model = DwshLogout {
             text: LogoutAction::None.to_string(),
             focused: LogoutAction::None,
         };

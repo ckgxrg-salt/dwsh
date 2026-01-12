@@ -33,8 +33,6 @@
           gtk4-layer-shell
           librsvg
         ];
-
-        # LD_LIBRARY_PATH = builtins.foldl' (a: b: "${a}:${b}/lib") "${pkgs.vulkan-loader}/lib" buildInputs;
       };
 
       packages.${system} = rec {

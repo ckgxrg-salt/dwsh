@@ -1,12 +1,5 @@
 # Plan for daywatch-shell
 
-## Style
-
-Should be done in single colour themed with respect to current system base16 scheme.
-Write a stylix module for this.
-
-The `base16` library is used to parse this.
-
 ## Binary - daywatch-shell
 
 This is the main interface that will run as a daemon.
@@ -60,22 +53,6 @@ Also shows the button to call launchpad.
 An application launcher, lists all possible applications in a grid with a search bar above for fuzzy search.
 When clicked on, use the WM to summon the application to avoid child process on daywatch-shell.
 Will not automatically switch workspaces.
-
-## Binary - daywatch-logout
-
-This is executable, will show up when called.
-
-### Logout screen
-
-Five buttons:
-- Poweroff
-- Reboot
-- Suspend
-- Lock
-- Logout
-
-And a line in the centre that displays either `Daywatch` or the action names.
-Actions need to be confirmed.
 
 ## Binary - daywatch-lock
 
