@@ -120,9 +120,9 @@ impl AsyncComponent for Media {
                         #[watch]
                         set_from_file: model.cover_art.as_deref(),
                         set_valign: gtk::Align::Center,
-                        set_pixel_size: 120,
+                        set_pixel_size: 144,
                     },
-                    attach[1, 0, 1, 1] = &gtk::Label {
+                    attach[1, 0, 3, 1] = &gtk::Label {
                         set_max_width_chars: 20,
                         set_ellipsize: gtk::pango::EllipsizeMode::End,
                         set_valign: gtk::Align::Center,
@@ -131,7 +131,7 @@ impl AsyncComponent for Media {
                         #[watch]
                         set_tooltip_text: Some(&model.title),
                     },
-                    attach[1, 1, 1, 1] = &gtk::Label {
+                    attach[1, 1, 3, 1] = &gtk::Label {
                         set_max_width_chars: 20,
                         set_ellipsize: gtk::pango::EllipsizeMode::End,
                         set_valign: gtk::Align::Center,
@@ -141,7 +141,7 @@ impl AsyncComponent for Media {
                         set_tooltip_text: Some(&model.artist),
                     },
 
-                    attach[0, 2, 2, 1] = &gtk::Scale {
+                    attach[0, 2, 4, 1] = &gtk::Scale {
                         set_width_request: 610,
 
                         #[watch]
@@ -155,7 +155,7 @@ impl AsyncComponent for Media {
                         }
                     },
 
-                    attach[0, 3, 2, 1] = &gtk::CenterBox {
+                    attach[0, 3, 4, 1] = &gtk::CenterBox {
                         #[wrap(Some)]
                         set_start_widget = &gtk::Label {
                             #[watch]
