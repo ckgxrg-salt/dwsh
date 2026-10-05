@@ -64,9 +64,14 @@ impl AsyncComponent for Media {
         gtk::Box {
             add_css_class: "panel",
             set_orientation: gtk4::Orientation::Vertical,
+            set_size_request: (630, 360),
+            set_halign: gtk::Align::Center,
+            set_valign: gtk::Align::Center,
 
             gtk::CenterBox {
                 set_size_request: (630, 60),
+                set_halign: gtk::Align::Center,
+                set_valign: gtk::Align::Center,
 
                 #[wrap(Some)]
                 set_start_widget = &gtk::Button {
@@ -79,8 +84,11 @@ impl AsyncComponent for Media {
                 #[wrap(Some)]
                 set_center_widget = &gtk::Box {
                     set_spacing: 20,
+                    set_halign: gtk::Align::Center,
+                    set_valign: gtk::Align::Center,
 
                     gtk::Image {
+                        set_valign: gtk::Align::Center,
                         // TODO:
                         #[watch]
                         set_icon_name: Some("todo"),
@@ -105,6 +113,8 @@ impl AsyncComponent for Media {
                     set_margin_end: 10,
                     set_row_spacing: 10,
                     set_column_spacing: 10,
+                    set_halign: gtk::Align::Center,
+                    set_valign: gtk::Align::Center,
 
                     attach[0, 0, 1, 2] = &gtk::Image {
                         #[watch]
@@ -115,6 +125,7 @@ impl AsyncComponent for Media {
                     attach[1, 0, 1, 1] = &gtk::Label {
                         set_max_width_chars: 20,
                         set_ellipsize: gtk::pango::EllipsizeMode::End,
+                        set_valign: gtk::Align::Center,
                         #[watch]
                         set_label: &model.title,
                         #[watch]
@@ -123,6 +134,7 @@ impl AsyncComponent for Media {
                     attach[1, 1, 1, 1] = &gtk::Label {
                         set_max_width_chars: 20,
                         set_ellipsize: gtk::pango::EllipsizeMode::End,
+                        set_valign: gtk::Align::Center,
                         #[watch]
                         set_label: &model.artist,
                         #[watch]
@@ -154,6 +166,9 @@ impl AsyncComponent for Media {
 
                         #[wrap(Some)]
                         set_center_widget = &gtk::Box {
+                            set_halign: gtk::Align::Center,
+                            set_valign: gtk::Align::Center,
+
                             gtk::Button {
                                 set_height_request: 30,
                                 set_icon_name: "media-skip-backward-symbolic",
@@ -196,6 +211,8 @@ impl AsyncComponent for Media {
             } else {
                 gtk::Label {
                     set_size_request: (420, 200),
+                    set_halign: gtk::Align::Center,
+                    set_valign: gtk::Align::Center,
                     set_label: "No Players Found",
                 }
             }

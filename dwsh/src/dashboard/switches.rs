@@ -29,9 +29,16 @@ impl SimpleAsyncComponent for Switches {
         gtk::Grid {
             add_css_class: "switches",
             add_css_class: "panel",
+            set_size_request: (360, 360),
+            set_row_homogeneous: true,
+            set_column_homogeneous: true,
+            set_halign: gtk::Align::Center,
+            set_valign: gtk::Align::Center,
 
             attach[0, 0, 1, 1] = &gtk::Button {
                 set_size_request: (150, 150),
+                set_halign: gtk::Align::Center,
+                set_valign: gtk::Align::Center,
 
                 #[watch]
                 set_class_active: ("active", model.mpd),
@@ -42,6 +49,8 @@ impl SimpleAsyncComponent for Switches {
             },
             attach[1, 0, 1, 1] = &gtk::Button {
                 set_size_request: (150, 150),
+                set_halign: gtk::Align::Center,
+                set_valign: gtk::Align::Center,
 
                 #[watch]
                 set_class_active: ("active", model.inhibit),
@@ -52,6 +61,8 @@ impl SimpleAsyncComponent for Switches {
             },
             attach[0, 1, 1, 1] = &gtk::Button {
                 set_size_request: (150, 150),
+                set_halign: gtk::Align::Center,
+                set_valign: gtk::Align::Center,
 
                 #[watch]
                 set_class_active: ("active", model.cava),

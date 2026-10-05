@@ -45,8 +45,10 @@ impl SimpleComponent for Dashboard {
             set_namespace: Some("dwsh-dashboard"),
 
             gtk::Grid {
-                set_row_spacing: 20,
+                set_row_spacing: 10,
                 set_column_spacing: 20,
+                set_halign: gtk::Align::Center,
+                set_valign: gtk::Align::Center,
 
                 attach[0, 0, 4, 6] = model.stats.widget(),
                 attach[4, 0, 6, 6] = model.calendar.widget(),

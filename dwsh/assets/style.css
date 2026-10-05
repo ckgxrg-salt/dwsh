@@ -2,11 +2,11 @@ window {
   background: transparent;
 }
 
-centerbox.panel,
 box.panel,
 grid.panel {
   background-color: alpha(@window_bg_color, 0.5);
   border-radius: 12px;
+  padding: 10px;
 }
 
 button {

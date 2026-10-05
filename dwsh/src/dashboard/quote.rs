@@ -7,7 +7,7 @@ use std::collections::VecDeque;
 use tokio::process::Command;
 
 // TODO: Write a config manager
-const QUOTE_MAX_WIDTH: usize = 75;
+const QUOTE_MAX_WIDTH: usize = 100;
 const QUOTE_MAX_LINES: usize = 5;
 
 pub struct Quote {

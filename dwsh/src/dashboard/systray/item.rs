@@ -42,6 +42,10 @@ impl FactoryComponent for SystrayItem {
 
     view! {
         gtk::Button {
+            set_size_request: (40, 40),
+            set_halign: gtk::Align::Center,
+            set_valign: gtk::Align::Center,
+
             #[watch]
             set_icon_name: self.icon_name.as_deref().unwrap_or("missing-icon-name"),
 

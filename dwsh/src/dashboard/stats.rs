@@ -41,19 +41,32 @@ impl AsyncComponent for Stats {
     type Output = ();
 
     view! {
-        gtk::CenterBox {
+        gtk::Box {
             add_css_class: "panel",
             set_orientation: gtk::Orientation::Vertical,
             set_size_request: (360, 360),
 
-            #[wrap(Some)]
-            set_start_widget = &gtk::Box {
+            gtk::Box {
+                set_vexpand: true,
+            },
+
+            gtk::Box {
+                set_orientation: gtk::Orientation::Horizontal,
+                set_spacing: 10,
+                set_halign: gtk::Align::Center,
+                set_margin_top: 10,
+                set_margin_bottom: 10,
+
                 gtk::Image {
+                    set_valign: gtk::Align::Center,
+
                     #[watch]
                     set_icon_name: Some(&model.battery_icon),
                 },
                 gtk::ProgressBar {
                     add_css_class: "battery-bar",
+                    set_halign: gtk::Align::Fill,
+                    set_valign: gtk::Align::Center,
                     #[watch]
                     set_class_active: ("low", model.battery_state == BatteryState::Low),
                     #[watch]
@@ -66,31 +79,51 @@ impl AsyncComponent for Stats {
                 },
             },
 
-            #[wrap(Some)]
-            set_center_widget = &gtk::Box {
+            gtk::Box {
+                set_orientation: gtk::Orientation::Horizontal,
+                set_spacing: 10,
+                set_halign: gtk::Align::Center,
+                set_margin_top: 10,
+                set_margin_bottom: 10,
+
                 gtk::Image {
+                    set_valign: gtk::Align::Center,
                     set_icon_name: Some("cpu-symbolic"),
                 },
                 gtk::ProgressBar {
                     add_css_class: "cpu-bar",
+                    set_halign: gtk::Align::Fill,
+                    set_valign: gtk::Align::Center,
 
                     #[watch]
                     set_fraction: model.cpu
                 },
             },
 
-            #[wrap(Some)]
-            set_end_widget = &gtk::Box {
+            gtk::Box {
+                set_orientation: gtk::Orientation::Horizontal,
+                set_spacing: 10,
+                set_halign: gtk::Align::Center,
+                set_margin_top: 10,
+                set_margin_bottom: 10,
+
                 gtk::Image {
+                    set_valign: gtk::Align::Center,
                     set_icon_name: Some("drive-virtual-symbolic"),
                 },
                 gtk::ProgressBar {
                     add_css_class: "memory-bar",
+                    set_halign: gtk::Align::Fill,
+                    set_valign: gtk::Align::Center,
 
                     #[watch]
                     set_fraction: model.mem
                 },
-            }
+            },
+
+            gtk::Box {
+                set_vexpand: true,
+            },
         }
     }
 

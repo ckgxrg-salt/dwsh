@@ -29,6 +29,9 @@ impl Component for Calendar {
 
             gtk::Label {
                 inline_css: "font-size: 96px;",
+                set_halign: gtk::Align::Center,
+                set_valign: gtk::Align::Center,
+                set_hexpand: true,
                 set_margin_end: 25,
 
                 #[watch]
@@ -36,15 +39,19 @@ impl Component for Calendar {
             },
             gtk::Box {
                 set_orientation: gtk::Orientation::Vertical,
+                set_halign: gtk::Align::Center,
+                set_valign: gtk::Align::Center,
 
                 gtk::Label {
                     inline_css: "font-size: 36px;",
+                    set_halign: gtk::Align::Center,
 
                     #[watch]
                     set_label: &model.time.format("%a").to_string()
                 },
                 gtk::Label {
                     inline_css: "font-size: 24px;",
+                    set_halign: gtk::Align::Center,
 
                     #[watch]
                     set_label: &model.time.format("%m/%d").to_string()
@@ -52,6 +59,9 @@ impl Component for Calendar {
             },
             gtk::Label {
                 inline_css: "font-size: 96px;",
+                set_halign: gtk::Align::Center,
+                set_valign: gtk::Align::Center,
+                set_hexpand: true,
                 set_margin_start: 25,
 
                 #[watch]

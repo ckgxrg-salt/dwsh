@@ -32,9 +32,17 @@ impl AsyncComponent for Systray {
         gtk::Box {
             add_css_class: "tray",
             add_css_class: "panel",
+            set_size_request: (630, 360),
+            set_halign: gtk::Align::Center,
+            set_valign: gtk::Align::Center,
+            set_spacing: 10,
 
             #[local_ref]
-            items_widget -> gtk::Box {},
+            items_widget -> gtk::Box {
+                set_halign: gtk::Align::Center,
+                set_valign: gtk::Align::Center,
+                set_spacing: 10,
+            },
         }
     }
 
