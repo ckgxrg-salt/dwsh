@@ -27,6 +27,7 @@ impl SimpleAsyncComponent for Quote {
 
     view! {
         gtk::Box {
+            add_css_class: "panel",
             gtk::Button {
                 set_width_request: 50,
 

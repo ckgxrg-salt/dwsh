@@ -42,8 +42,12 @@ impl SimpleComponent for Dashboard {
             set_layer: Layer::Bottom,
             set_keyboard_mode: gtk4_layer_shell::KeyboardMode::OnDemand,
             set_title: Some("dwsh-dashboard"),
+            set_namespace: Some("dwsh-dashboard"),
 
             gtk::Grid {
+                set_row_spacing: 20,
+                set_column_spacing: 20,
+
                 attach[0, 0, 4, 6] = model.stats.widget(),
                 attach[4, 0, 6, 6] = model.calendar.widget(),
                 attach[10, 0, 4, 6] = model.switches.widget(),

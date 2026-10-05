@@ -41,11 +41,13 @@ impl AsyncComponent for Stats {
     type Output = ();
 
     view! {
-        gtk::Box {
+        gtk::CenterBox {
+            add_css_class: "panel",
             set_orientation: gtk::Orientation::Vertical,
-            set_width_request: 360,
+            set_size_request: (360, 360),
 
-            gtk::Box {
+            #[wrap(Some)]
+            set_start_widget = &gtk::Box {
                 gtk::Image {
                     #[watch]
                     set_icon_name: Some(&model.battery_icon),
@@ -64,7 +66,8 @@ impl AsyncComponent for Stats {
                 },
             },
 
-            gtk::Box {
+            #[wrap(Some)]
+            set_center_widget = &gtk::Box {
                 gtk::Image {
                     set_icon_name: Some("cpu-symbolic"),
                 },
@@ -76,7 +79,8 @@ impl AsyncComponent for Stats {
                 },
             },
 
-            gtk::Box {
+            #[wrap(Some)]
+            set_end_widget = &gtk::Box {
                 gtk::Image {
                     set_icon_name: Some("drive-virtual-symbolic"),
                 },

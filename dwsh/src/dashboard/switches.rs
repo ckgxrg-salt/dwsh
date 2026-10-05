@@ -28,6 +28,7 @@ impl SimpleAsyncComponent for Switches {
     view! {
         gtk::Grid {
             add_css_class: "switches",
+            add_css_class: "panel",
 
             attach[0, 0, 1, 1] = &gtk::Button {
                 set_size_request: (150, 150),

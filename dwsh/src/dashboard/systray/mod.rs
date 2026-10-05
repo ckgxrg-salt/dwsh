@@ -31,6 +31,7 @@ impl AsyncComponent for Systray {
     view! {
         gtk::Box {
             add_css_class: "tray",
+            add_css_class: "panel",
 
             #[local_ref]
             items_widget -> gtk::Box {},

@@ -24,6 +24,7 @@ impl Component for Calendar {
 
     view! {
         gtk::Box {
+            add_css_class: "panel",
             set_size_request: (540, 360),
 
             gtk::Label {

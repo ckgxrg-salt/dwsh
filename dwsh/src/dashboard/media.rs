@@ -62,6 +62,7 @@ impl AsyncComponent for Media {
 
     view! {
         gtk::Box {
+            add_css_class: "panel",
             set_orientation: gtk4::Orientation::Vertical,
 
             gtk::CenterBox {
