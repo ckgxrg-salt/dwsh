@@ -44,8 +44,12 @@ impl SimpleAsyncComponent for Switches {
                 set_class_active: ("active", model.mpd),
                 #[watch]
                 set_tooltip_text: if model.mpd { Some("MPD is running") } else { Some("MPD is not running") },
-                set_icon_name: "playlist-symbolic",
                 connect_clicked => SwitchesMsg::Mpd,
+
+                gtk::Image {
+                    set_icon_name: Some("playlist-symbolic"),
+                    set_pixel_size: 32,
+                }
             },
             attach[1, 0, 1, 1] = &gtk::Button {
                 set_size_request: (150, 150),
@@ -56,8 +60,12 @@ impl SimpleAsyncComponent for Switches {
                 set_class_active: ("active", model.inhibit),
                 #[watch]
                 set_tooltip_text: if model.inhibit { Some("Inhibited system idle") } else { Some("This button says Zzz, pretending to sleep") },
-                set_icon_name: if model.inhibit { "caffeine-cup-full-symbolic" } else { "caffeine-cup-empty-symbolic" },
                 connect_clicked => SwitchesMsg::Inhibit,
+
+                gtk::Image {
+                    set_icon_name: Some(if model.inhibit { "caffeine-cup-full-symbolic" } else { "caffeine-cup-empty-symbolic" }),
+                    set_pixel_size: 32,
+                }
             },
             attach[0, 1, 1, 1] = &gtk::Button {
                 set_size_request: (150, 150),
@@ -68,8 +76,12 @@ impl SimpleAsyncComponent for Switches {
                 set_class_active: ("active", model.cava),
                 #[watch]
                 set_tooltip_text: if model.cava { Some("CAVA is running") } else { Some("CAVA is not running") },
-                set_icon_name: "histogram-symbolic",
                 connect_clicked => SwitchesMsg::Cava,
+
+                gtk::Image {
+                    set_icon_name: Some("histogram-symbolic"),
+                    set_pixel_size: 32,
+                }
             },
         },
     }

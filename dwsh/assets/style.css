@@ -4,14 +4,14 @@ window {
 
 box.panel,
 grid.panel {
-  background-color: alpha(@window_bg_color, 0.5);
+  background-color: alpha(@window_bg_color, 0.75);
   border-radius: 12px;
   padding: 10px;
 }
 
 button {
   border-radius: 12px;
-  background-color: alpha(@card_bg_color, 0.75);
+  background-color: alpha(@card_bg_color, 0.5);
   color: @window_fg_color;
   transition: background-color 100ms ease-in-out;
 }
