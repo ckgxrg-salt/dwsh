@@ -46,10 +46,13 @@ impl FactoryComponent for SystrayItem {
             set_halign: gtk::Align::Center,
             set_valign: gtk::Align::Center,
 
-            #[watch]
-            set_icon_name: self.icon_name.as_deref().unwrap_or("missing-icon-name"),
-
             connect_clicked => SystrayItemMsg::LeftClick,
+
+            gtk::Image {
+                #[watch]
+                set_icon_name: Some(self.icon_name.as_deref().unwrap_or("missing-icon-name")),
+                set_pixel_size: 24,
+            }
         },
     }
 

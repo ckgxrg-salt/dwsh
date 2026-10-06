@@ -5,6 +5,10 @@ use dwsh::dashboard::Dashboard;
 fn main() {
     let app = RelmApp::new("io.ckgxrg.dwsh");
 
+    if let Some(settings) = gtk4::Settings::default() {
+        settings.set_gtk_application_prefer_dark_theme(true);
+    }
+
     // You couln't find
     //
     // your CSS.

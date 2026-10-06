@@ -59,6 +59,7 @@ impl AsyncComponent for Stats {
 
                 gtk::Image {
                     set_valign: gtk::Align::Center,
+                    set_pixel_size: 32,
 
                     #[watch]
                     set_icon_name: Some(&model.battery_icon),
@@ -88,6 +89,7 @@ impl AsyncComponent for Stats {
 
                 gtk::Image {
                     set_valign: gtk::Align::Center,
+                    set_pixel_size: 32,
                     set_icon_name: Some("cpu-symbolic"),
                 },
                 gtk::ProgressBar {
@@ -109,6 +111,7 @@ impl AsyncComponent for Stats {
 
                 gtk::Image {
                     set_valign: gtk::Align::Center,
+                    set_pixel_size: 32,
                     set_icon_name: Some("drive-virtual-symbolic"),
                 },
                 gtk::ProgressBar {

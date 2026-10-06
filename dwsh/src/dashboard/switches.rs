@@ -48,7 +48,7 @@ impl SimpleAsyncComponent for Switches {
 
                 gtk::Image {
                     set_icon_name: Some("playlist-symbolic"),
-                    set_pixel_size: 32,
+                    set_pixel_size: 64,
                 }
             },
             attach[1, 0, 1, 1] = &gtk::Button {
@@ -64,7 +64,7 @@ impl SimpleAsyncComponent for Switches {
 
                 gtk::Image {
                     set_icon_name: Some(if model.inhibit { "caffeine-cup-full-symbolic" } else { "caffeine-cup-empty-symbolic" }),
-                    set_pixel_size: 32,
+                    set_pixel_size: 64,
                 }
             },
             attach[0, 1, 1, 1] = &gtk::Button {
@@ -80,7 +80,7 @@ impl SimpleAsyncComponent for Switches {
 
                 gtk::Image {
                     set_icon_name: Some("histogram-symbolic"),
-                    set_pixel_size: 32,
+                    set_pixel_size: 64,
                 }
             },
         },

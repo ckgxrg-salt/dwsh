@@ -9,6 +9,11 @@ grid.panel {
   padding: 10px;
 }
 
+box.panel image,
+grid.panel image {
+  color: @window_fg_color;
+}
+
 button {
   border-radius: 12px;
   background-color: alpha(@card_bg_color, 0.5);
