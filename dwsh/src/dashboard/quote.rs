@@ -3,12 +3,10 @@
 use gtk4::prelude::*;
 use relm4::prelude::*;
 
-use std::collections::VecDeque;
 use tokio::process::Command;
 
 // TODO: Write a config manager
-const QUOTE_MAX_WIDTH: usize = 100;
-const QUOTE_MAX_LINES: usize = 5;
+const QUOTE_MAX_WIDTH_CHARS: i32 = 100;
 
 pub struct Quote {
     text: String,
@@ -28,23 +26,38 @@ impl SimpleAsyncComponent for Quote {
     view! {
         gtk::Box {
             add_css_class: "panel",
+            set_size_request: (1210, 200),
+            set_spacing: 10,
+
             gtk::Button {
                 set_width_request: 50,
+                set_valign: gtk::Align::Center,
 
                 set_tooltip_text: Some("Refresh quote"),
                 set_icon_name: "messenger-indicator-symbolic",
                 connect_clicked => QuoteMsg::RefreshQuote
             },
-            gtk::Label {
-                set_size_request: (1210, 200),
-                inline_css: "font-size: 24px;",
 
-                set_wrap: true,
+            gtk::ScrolledWindow {
+                set_hexpand: true,
+                set_vexpand: true,
+                set_hscrollbar_policy: gtk::PolicyType::Never,
+                set_vscrollbar_policy: gtk::PolicyType::Automatic,
 
-                #[watch]
-                set_label: &format_quote(&model.text),
-                #[watch]
-                set_tooltip_text: Some(&model.text)
+                gtk::Label {
+                    inline_css: "font-size: 24px;",
+                    set_wrap: true,
+                    set_wrap_mode: gtk::pango::WrapMode::Word,
+                    set_max_width_chars: QUOTE_MAX_WIDTH_CHARS,
+                    set_xalign: 0.5,
+                    set_valign: gtk::Align::Center,
+                    set_hexpand: true,
+
+                    #[watch]
+                    set_label: &model.text,
+                    #[watch]
+                    set_tooltip_text: Some(&model.text)
+                }
             }
         }
     }
@@ -73,58 +86,9 @@ async fn get_fortune() -> String {
         .output()
         .await
         .map(|o| {
-            String::from_utf8(o.stdout).unwrap_or(String::from("Error parsing quote from fortune"))
+            String::from_utf8(o.stdout)
+                .map(|s| s.trim_end().to_string())
+                .unwrap_or(String::from("Error parsing quote from fortune"))
         })
         .unwrap_or(String::from("Error fetching quote from fortune"))
-}
-
-// TODO: awful
-fn format_quote(s: &str) -> String {
-    let mut lines: VecDeque<String> = s.split('\n').map(String::from).collect();
-    let mut result: Vec<String> = Vec::new();
-
-    while let Some(current_line) = lines.pop_front() {
-        if result.len() >= QUOTE_MAX_LINES {
-            lines.push_front(current_line);
-            break;
-        }
-
-        if current_line.chars().count() < QUOTE_MAX_WIDTH {
-            result.push(current_line);
-        } else {
-            let target_char_idx = QUOTE_MAX_WIDTH - 1;
-            let mut split_byte_idx = current_line.len();
-            let mut last_space_byte_idx = None;
-
-            for (char_idx, (byte_idx, c)) in current_line.char_indices().enumerate() {
-                if char_idx == target_char_idx {
-                    split_byte_idx = byte_idx;
-                    if c == ' ' {
-                        last_space_byte_idx = Some(byte_idx);
-                    }
-                    break;
-                }
-                if c == ' ' {
-                    last_space_byte_idx = Some(byte_idx);
-                }
-            }
-
-            let split_idx = last_space_byte_idx.unwrap_or(split_byte_idx);
-
-            let keep_part = current_line[..split_idx].to_string();
-            let remainder = current_line[split_idx..].trim_start();
-
-            result.push(keep_part);
-
-            if !remainder.is_empty() {
-                lines.push_front(remainder.to_string());
-            }
-        }
-    }
-
-    if !lines.is_empty() && result.len() == QUOTE_MAX_LINES {
-        result.push("......".to_string());
-    }
-
-    result.join("\n")
 }
