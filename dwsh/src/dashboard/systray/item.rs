@@ -1,5 +1,7 @@
 //! A single tray item
 
+use gtk4::gdk::{MemoryFormat, MemoryTexture};
+use gtk4::glib::Bytes;
 use gtk4::prelude::*;
 use relm4::prelude::*;
 
@@ -7,7 +9,7 @@ use futures::StreamExt;
 use wayle_systray::{
     adapters::gtk4::Adapter,
     core::item::TrayItem,
-    types::{Coordinates, menu::MenuItem},
+    types::{Coordinates, item::IconPixmap, menu::MenuItem},
 };
 
 use std::sync::Arc;
@@ -18,8 +20,11 @@ const TRAY_ITEM_SIZE: i32 = 100;
 pub struct SystrayItem {
     item: Arc<TrayItem>,
     icon_name: Option<String>,
+    icon_pixmap: Option<IconPixmap>,
+    icon_theme_path: Option<String>,
     menu_root: Option<MenuItem>,
     button: Option<gtk::Button>,
+    image: Option<gtk::Image>,
     popover: Option<gtk::PopoverMenu>,
 }
 
@@ -31,8 +36,10 @@ pub enum SystrayItemMsg {
 
 #[derive(Debug)]
 pub enum SystrayItemCmd {
-    UpdateMenu(Option<MenuItem>),
-    UpdateIcon(Option<String>),
+    Menu(Option<MenuItem>),
+    Icon(Option<String>),
+    IconPixmap(Vec<IconPixmap>),
+    IconThemePath(Option<String>),
 }
 
 #[relm4::factory(pub)]
@@ -51,9 +58,9 @@ impl FactoryComponent for SystrayItem {
 
             connect_clicked => SystrayItemMsg::LeftClick,
 
+            #[name(image)]
             gtk::Image {
-                #[watch]
-                set_icon_name: Some(self.icon_name.as_deref().unwrap_or("missing-icon-name")),
+                set_icon_name: Some("missing-icon-name"),
                 set_pixel_size: 32,
             }
         },
@@ -63,8 +70,11 @@ impl FactoryComponent for SystrayItem {
         Self {
             item: init,
             icon_name: None,
+            icon_pixmap: None,
+            icon_theme_path: None,
             menu_root: None,
             button: None,
+            image: None,
             popover: None,
         }
     }
@@ -89,9 +99,12 @@ impl FactoryComponent for SystrayItem {
         self.button = Some(root.clone());
 
         self.watch_icon(&sender);
+        self.watch_icon_pixmap(&sender);
+        self.watch_icon_theme_path(&sender);
         self.watch_menu(&sender);
 
         let widgets = view_output!();
+        self.image = Some(widgets.image.clone());
         widgets
     }
 
@@ -110,8 +123,19 @@ impl FactoryComponent for SystrayItem {
 
     fn update_cmd(&mut self, message: Self::CommandOutput, _sender: FactorySender<Self>) {
         match message {
-            SystrayItemCmd::UpdateIcon(value) => self.icon_name = value,
-            SystrayItemCmd::UpdateMenu(value) => self.menu_root = value,
+            SystrayItemCmd::Icon(value) => {
+                self.icon_name = value;
+                self.refresh_icon();
+            }
+            SystrayItemCmd::IconPixmap(value) => {
+                self.icon_pixmap = value.into_iter().max_by_key(|p| p.width * p.height);
+                self.refresh_icon();
+            }
+            SystrayItemCmd::IconThemePath(value) => {
+                self.icon_theme_path = value;
+                self.refresh_icon();
+            }
+            SystrayItemCmd::Menu(value) => self.menu_root = value,
         }
     }
 }
@@ -142,11 +166,73 @@ impl SystrayItem {
             shutdown
                 .register(async move {
                     while let Some(value) = stream.next().await {
-                        let _ = out.send(SystrayItemCmd::UpdateIcon(value));
+                        let _ = out.send(SystrayItemCmd::Icon(value));
                     }
                 })
                 .drop_on_shutdown()
         });
+    }
+
+    fn watch_icon_pixmap(&self, sender: &FactorySender<SystrayItem>) {
+        let mut stream = self.item.icon_pixmap.watch();
+
+        sender.command(|out, shutdown| {
+            shutdown
+                .register(async move {
+                    while let Some(value) = stream.next().await {
+                        let _ = out.send(SystrayItemCmd::IconPixmap(value));
+                    }
+                })
+                .drop_on_shutdown()
+        });
+    }
+
+    fn watch_icon_theme_path(&self, sender: &FactorySender<SystrayItem>) {
+        let mut stream = self.item.icon_theme_path.watch();
+
+        sender.command(|out, shutdown| {
+            shutdown
+                .register(async move {
+                    while let Some(value) = stream.next().await {
+                        let _ = out.send(SystrayItemCmd::IconThemePath(value));
+                    }
+                })
+                .drop_on_shutdown()
+        });
+    }
+
+    /// Tray item's icon can come from various sources.
+    fn refresh_icon(&self) {
+        let Some(image) = self.image.as_ref() else {
+            return;
+        };
+
+        if let Some(theme_path) = self.icon_theme_path.as_deref().filter(|p| !p.is_empty())
+            && let Some(display) = gtk4::gdk::Display::default()
+        {
+            gtk4::IconTheme::for_display(&display).add_search_path(theme_path);
+        }
+
+        if let Some(name) = self.icon_name.as_deref().filter(|n| !n.is_empty()) {
+            if std::path::Path::new(name).exists() {
+                let file = gtk4::gio::File::for_path(name);
+                image.set_from_gicon(&gtk4::gio::FileIcon::new(&file));
+            } else {
+                image.set_from_gicon(&gtk4::gio::ThemedIcon::new(name));
+            }
+        } else if let Some(pixmap) = &self.icon_pixmap {
+            let bytes = Bytes::from(&pixmap.data);
+            let texture = MemoryTexture::new(
+                pixmap.width,
+                pixmap.height,
+                MemoryFormat::A8r8g8b8,
+                &bytes,
+                (pixmap.width * 4) as usize,
+            );
+            image.set_from_gicon(&texture);
+        } else {
+            image.set_icon_name(Some("missing-icon-name"));
+        }
     }
 
     fn watch_menu(&self, sender: &FactorySender<SystrayItem>) {
@@ -156,7 +242,7 @@ impl SystrayItem {
             shutdown
                 .register(async move {
                     while let Some(value) = stream.next().await {
-                        let _ = out.send(SystrayItemCmd::UpdateMenu(value));
+                        let _ = out.send(SystrayItemCmd::Menu(value));
                     }
                 })
                 .drop_on_shutdown()
