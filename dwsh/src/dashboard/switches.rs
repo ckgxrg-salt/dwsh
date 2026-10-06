@@ -129,16 +129,17 @@ impl SimpleAsyncComponent for Switches {
                         .status()
                         .await;
                 } else {
-                    let _ = Command::new("systemctl")
-                        .args([
-                            "--user",
-                            "start",
-                            "mpd.service",
-                            "mpd-notification.service",
-                            "mpd-mpris.service",
-                        ])
-                        .status()
-                        .await;
+                    // `mpd` must be ready before the other 2.
+                    for service in [
+                        "mpd.service",
+                        "mpd-notification.service",
+                        "mpd-mpris.service",
+                    ] {
+                        let _ = Command::new("systemctl")
+                            .args(["--user", "start", service])
+                            .status()
+                            .await;
+                    }
                 }
                 self.mpd = get_state("mpd.service").await;
             }
