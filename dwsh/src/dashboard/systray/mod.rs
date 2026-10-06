@@ -6,6 +6,7 @@ use gtk4::prelude::*;
 use relm4::prelude::*;
 
 use futures::StreamExt;
+use std::collections::HashSet;
 use std::sync::Arc;
 use wayle_systray::core::item::TrayItem;
 
@@ -114,6 +115,14 @@ impl AsyncComponent for Systray {
     ) {
         match message {
             TrayCmd::UpdateItems(value) => {
+                // Some applications register under different names.
+                // Deduplicate them by id manually.
+                let mut seen = HashSet::new();
+                let value: Vec<_> = value
+                    .into_iter()
+                    .filter(|item| seen.insert(item.id.get()))
+                    .collect();
+
                 {
                     let mut upper = self.upper_items.guard();
                     upper.clear();
