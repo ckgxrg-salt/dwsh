@@ -9,7 +9,7 @@ fn main() {
         settings.set_gtk_application_prefer_dark_theme(true);
     }
 
-    // You couln't find
+    // You couldn't find
     //
     // your CSS.
     // Fix css being overridden by something else

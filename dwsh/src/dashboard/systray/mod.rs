@@ -13,7 +13,10 @@ use crate::services::tray_service;
 use item::SystrayItem;
 
 pub struct Systray {
-    items: FactoryVecDeque<SystrayItem>,
+    upper_items: FactoryVecDeque<SystrayItem>,
+    lower_items: FactoryVecDeque<SystrayItem>,
+    lower_widget: gtk::Box,
+    separator: gtk::Separator,
 }
 
 #[derive(Debug)]
@@ -35,13 +38,39 @@ impl AsyncComponent for Systray {
             set_size_request: (630, 360),
             set_halign: gtk::Align::Center,
             set_valign: gtk::Align::Center,
+            set_orientation: gtk::Orientation::Vertical,
             set_spacing: 10,
 
+            gtk::Box {
+                set_vexpand: true,
+            },
+
             #[local_ref]
-            items_widget -> gtk::Box {
-                set_halign: gtk::Align::Center,
+            upper_widget -> gtk::Box {
+                set_halign: gtk::Align::Start,
                 set_valign: gtk::Align::Center,
+                set_margin_start: 35,
+                set_margin_end: 35,
                 set_spacing: 10,
+            },
+
+            #[local_ref]
+            separator -> gtk::Separator {
+                set_visible: false,
+            },
+
+            #[local_ref]
+            lower_widget -> gtk::Box {
+                set_halign: gtk::Align::Start,
+                set_valign: gtk::Align::Center,
+                set_margin_start: 35,
+                set_margin_end: 35,
+                set_spacing: 10,
+                set_visible: false,
+            },
+
+            gtk::Box {
+                set_vexpand: true,
             },
         }
     }
@@ -53,13 +82,26 @@ impl AsyncComponent for Systray {
     ) -> AsyncComponentParts<Self> {
         watch_tray(&sender).await;
 
-        let items = FactoryVecDeque::builder()
+        let upper_items: FactoryVecDeque<SystrayItem> = FactoryVecDeque::builder()
+            .launch(gtk::Box::default())
+            .detach();
+        let lower_items: FactoryVecDeque<SystrayItem> = FactoryVecDeque::builder()
             .launch(gtk::Box::default())
             .detach();
 
-        let model = Self { items };
+        let lower_widget = lower_items.widget().clone();
+        let separator = gtk::Separator::default();
 
-        let items_widget = model.items.widget();
+        let model = Self {
+            upper_items,
+            lower_items,
+            lower_widget,
+            separator,
+        };
+
+        let upper_widget = model.upper_items.widget();
+        let lower_widget = model.lower_items.widget();
+        let separator = &model.separator;
         let widgets = view_output!();
         AsyncComponentParts { model, widgets }
     }
@@ -72,11 +114,25 @@ impl AsyncComponent for Systray {
     ) {
         match message {
             TrayCmd::UpdateItems(value) => {
-                let mut guard = self.items.guard();
-                guard.clear();
-                value.iter().for_each(|item| {
-                    guard.push_back(item.clone());
-                });
+                {
+                    let mut upper = self.upper_items.guard();
+                    upper.clear();
+                    for item in value.iter().take(5) {
+                        upper.push_back(item.clone());
+                    }
+                }
+
+                {
+                    let mut lower = self.lower_items.guard();
+                    lower.clear();
+                    for item in value.iter().skip(5) {
+                        lower.push_back(item.clone());
+                    }
+                }
+
+                let show_lower = value.len() > 5;
+                self.lower_widget.set_visible(show_lower);
+                self.separator.set_visible(show_lower);
             }
         }
     }

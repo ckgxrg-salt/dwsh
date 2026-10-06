@@ -12,6 +12,9 @@ use wayle_systray::{
 
 use std::sync::Arc;
 
+// Side length of a tray item button.
+const TRAY_ITEM_SIZE: i32 = 100;
+
 pub struct SystrayItem {
     item: Arc<TrayItem>,
     icon_name: Option<String>,
@@ -42,7 +45,7 @@ impl FactoryComponent for SystrayItem {
 
     view! {
         gtk::Button {
-            set_size_request: (40, 40),
+            set_size_request: (TRAY_ITEM_SIZE, TRAY_ITEM_SIZE),
             set_halign: gtk::Align::Center,
             set_valign: gtk::Align::Center,
 
@@ -51,7 +54,7 @@ impl FactoryComponent for SystrayItem {
             gtk::Image {
                 #[watch]
                 set_icon_name: Some(self.icon_name.as_deref().unwrap_or("missing-icon-name")),
-                set_pixel_size: 24,
+                set_pixel_size: 32,
             }
         },
     }
